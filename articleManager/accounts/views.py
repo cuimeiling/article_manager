@@ -1,13 +1,10 @@
 # coding=utf8
-from django.shortcuts import render,render_to_response
-from loginORreg.models import account,Styles, Article,link
+from django.shortcuts import redirect, render_to_response
+from loginORreg.models import account,Styles, Article,link,comment
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib import auth
-from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.exceptions import ObjectDoesNotExist
-from win32com import client as wc 
 import os, time, random
 import json
 from django import forms
@@ -72,28 +69,36 @@ def accountHOME(request):
         u = User.objects.get(id=request.user.id).account
         e = u.articles.all()
         a = e.order_by('-update_time')
-
         try:
             print a[0].Title
-            print a[0].atctype
+            if request.POST.has_key("tijiao"):
+                com = comment()
+                com.article_id = str(a[0].id)
+                com.owner = u.nichname
+                com.owner_favicon = u.Favicon
+                com.text = request.POST["content"]
+                com.save()
+                return HttpResponseRedirect("/account/")
             if a[0].atctype == "html":
-                print "asdf"
-                return render_to_response('bookHTML.html',{'a':a[0],'title':a[0].Title,})
+                com = comment.objects.filter(article_id = str(a[0].id))
+                return render_to_response('bookHTML.html',{'a':a[0],'title':a[0].Title,'comments':com})
             if a[0].atctype == "pdf" or "other":
                 name  = a.order_by('-update_time')[0].filey
                 name = str(name)[10:]
+                print name
                 i=1
                 while '.pdf' not in name:
                     name  = a.order_by('-update_time')[i].filey
                     name = str(name)[10:]
                     i+=1
                 b = a.order_by('-update_time')[i-1]
-            
+                com = comment.objects.filter(article_id = str(b.id))
         except:
             r = random.choice(['a','b','c','d','e'])
             name = '/static/file/%s.pdf'%r
             b = []
-        return render_to_response('in.html',{'a':b,"name":name})
+            com = []
+        return render_to_response('in.html',{'a':b,"name":name,'comments':com})
 def bianji(request):
     u = User.objects.get(id=request.user.id)
     if "bookname" in request.GET:
@@ -132,6 +137,7 @@ def xinjian(request):
     atc = Article()
     name = ""
     u = User.objects.get(id=request.user.id)
+    atc.author = u.account.nichname
     if "bookname" in request.GET:
         u = u.account
         a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
@@ -200,33 +206,19 @@ def add(req):
 class UserForm(forms.Form):
     Title = forms.CharField()
     filey = forms.FileField()
-class imageForm(forms.Form):
-    Nichname = forms.CharField()
-    intersting = forms.CharField()
-    image = forms.ImageField()
 
 def ADDrergist(request):
+    u = User.objects.get(id=request.user.id).account
     if "bookname" in request.GET:
-        u = User.objects.get(id=request.user.id).account
         a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
         return render_to_response('show.html',{"articles":a})
     if request.POST.has_key("tijiao"):
-        imf = imageForm(request.POST,request.POST,request.FILES)
-        print imf
-        if imf.is_valid():
-            nichname = imf.cleaned_data['Nichname']
-            intersting = imf.cleaned_data['intersting']
-            image = imf.cleaned_data['image']
-            print image.name()
-            a = account()
-            a.nichname = nichname
-            a.intristing = intersting
-            a.Favicon = image
-            a.save()
-            return HttpResponseRedirect("/account/")
-    else:
-        imf = imageForm()
-    return render_to_response('setting.html',{'imf':imf})
+        u.update(nichname = request.POST["Nichname"])
+        x = request.POST["content"][10:-10]
+        u.update(Favicon = x)
+        u.update(intristing = request.POST["intersting"])
+        return HttpResponseRedirect("/account/")
+    return render_to_response('setting.html')
 def upload_filey(request):
     if "bookname" in request.GET:
         u = User.objects.get(id=request.user.id).account
@@ -409,19 +401,27 @@ def delete(req):
             return HttpResponseRedirect("/account/")
    
 def book(request):
+    u = User.objects.get(id=request.user.id).account
     if "bookname" in request.GET:
-        u = User.objects.get(id=request.user.id).account
         a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
         return render_to_response('show.html',{"articles":a})
     if "book" in request.GET:
+        if request.POST.has_key("tijiao"):
+            com = comment()
+            com.article_id = str(request.GET["book"])
+            com.owner = u.nichname
+            com.owner_favicon = u.Favicon
+            com.text = request.POST["content"]
+            com.save()
+            return HttpResponseRedirect("/account/book/?book=%s"%request.GET["book"])
         a = Article.objects.get(id = request.GET["book"])
-        a.save()
+        com = comment.objects.filter(article_id = str(a.id))
         if a.atctype == "pdf":
             name  = a.filey
             name = str(name)[10:]
-            return render_to_response('book.html',{'a':a,"name":name})
+            return render_to_response('book.html',{'a':a,"name":name,'comments':com})
         if a.atctype == "html":
-            return render_to_response('bookHTML.html',{'a':a,'title':a.Title,})
+            return render_to_response('bookHTML.html',{'a':a,'title':a.Title,'comments':com})
 def show_all(req):
     if "bookname" in req.GET:
         u = User.objects.get(id=req.user.id).account

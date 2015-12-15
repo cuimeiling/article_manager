@@ -2,10 +2,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 from storage import ImageStorage
-import time
+from django.utils import timezone
 #from django.contrib.auth.admin import UserAdmin
 #import datetime
-
+class comment(models.Model):
+    article_id = models.CharField(max_length=42)
+    owner = models.CharField(max_length=256)
+    owner_favicon = models.CharField(max_length=256)
+    text = models.TextField()
+    created_time = models.DateTimeField(default=timezone.now)
 class Styles(models.Model):
     name = models.CharField(max_length=30)     
     parent = models.ForeignKey("self", blank=True, null=True, related_name="children")           

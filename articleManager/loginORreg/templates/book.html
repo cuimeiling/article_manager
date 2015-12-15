@@ -9,6 +9,10 @@
     <!-- Custom styles for this template -->
     <!--<link href="/static/css/style.css" rel="stylesheet">-->
     <title>文章管理器</title>
+	<link rel="stylesheet" href="/static/css/blog.css">
+    <link rel="stylesheet" href="/static/kindeditor-4.1.10/themes/default/default.css"/>
+    <script charset="utf-8" src="/static/kindeditor-4.1.10/kindeditor-min.js"></script>
+    <script charset="utf-8" src="/static/kindeditor-4.1.10//lang/zh_CN.js"></script>
     <link rel = "stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
     <script src="/static/js/jquery-1.9.1.min.js"></script>
@@ -22,6 +26,28 @@
             });
         });
 
+    </script>
+	<script type="text/javascript">
+        var editor;
+
+        KindEditor.ready(function (K) {
+
+            editor = K.create('#content2', {
+                themeType: 'simple',
+                cssPath: '/static/kindeditor-4.1.10/plugins/code/prettify.css',
+                resizeType: 1,
+				pasteType : 1,
+                uploadJson: 'http://127.0.0.1:8000/uploadImg/',
+				afterBlur:function(){this.sync();}, 
+				items:["formatblock", "fontname", "fontsize"," " ,"|"," ",
+				"bold", "italic", "underline"," " ,"|","code","emoticons","link", "unlink",]
+            });
+            prettyPrint();
+            K('input[name=tijiao]').click(function (e) {
+                document.getElementById("sname").value = editor.html();
+
+            });
+        });
     </script>
     <style type="text/css">
         body{position: relative;
@@ -80,9 +106,13 @@
             padding-left:100px;
             height:600px;
             width:700px;
-
             float:left;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
 
+        }
+		.content-main2{
+            padding-left:300px;
+            width:700px;
+            float:left;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
         }
     </style>
 </head>
@@ -139,7 +169,7 @@
         </ul>
     </div>
     <div class="content-main">
-        <object id="resourceobject" data="a.pdf" type="application/pdf" width="1000" height="600" style="width: 1013px; height: 500px;">
+        <object id="resourceobject" data="{{ name }}" type="application/pdf" width="1000" height="600" style="width: 1013px; height: 500px;">
             <param name="src" value="{{ name }}">
             点击<a href="{{ name }}">我的文章</a>
         </object>
@@ -147,16 +177,50 @@
     </div>
 
 </div>
-
-    <div class="Main" style="padding-top: 100px;padding-left:250px;">评论
-        <div class="Input_Box">
-            <input class="Input_text"style="width:800px;height:100px;"></input>
+<div id="commentlist" class="content-main2">
+<lable style="font-size:24px;font-weight:bold;">评论 :</lable>
+        {% if not comments %}
+            <ol id="thecomments">
+                <li  style="font-size:16px;font-weight:bold;color:#CDCDC1;">本文目前尚无任何评论.</li>
+            </ol>
+        {% else %}
+            <ol id="thecomments">
+                {% for comment in comments %}
+                    <li class="comment regularcomment">
+                        <div class="author">
+                            <div class="pic">
+                                <img src="{{comment.owner_favicon}}"
+                                     class="avatar avatar-32 photo" height="32" width="32">
+                            </div>
+                            <div class="name">{{ comment.owner }}：</div>
+                        </div>
+                        <div class="info">
+                            <div class="date">{{ comment.created_time}}</div>
+                            <div class="act"></div>
+                            <div class="fixed"></div>
+                            <div class="content">
+                                <div id="commentbody-3">
+                                    {% autoescape off %}
+										{{ comment.text }}
+									{% endautoescape %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fixed"></div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+        <!-- comments END -->
+        <div class="fixed"></div>
+    
+    <div>
+		<form class="form-submit" name="frm" method="post">
+		<div>
+            <textarea id="content2" name="content"
+                style="width:670px;height:100px;visibility:hidden;"></textarea>
             <button class="btn-sm btn-primary" type="submit" name = "tijiao">提交</button>
-
-        </div>
-    </div>
-
-
-
+        </div></form>
+    </div></div>
     </body>
 </html>

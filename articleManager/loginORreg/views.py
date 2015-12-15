@@ -132,7 +132,12 @@ def regist(request):
         if len(user)!=0 and len(password1) != 0 and len(password2) != 0 and len(email) != 0 and userexist==False and CompareFlag==True:
             u = User.objects.create_user(username=user,email=email,password=password1)
             u.save
-            a = account(user = u)
+            a = account()
+            a.user = u
+            a.nichname = user
+            a.intristing = "未知"
+            x = str(random.randint(0,9))
+            a.Favicon = "/static/image/upload/%s.jpg"%x
             a.save()
             s = Styles()
             s.name = u.username

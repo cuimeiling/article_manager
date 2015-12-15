@@ -132,7 +132,7 @@
             <tr>
                 <h1>
 				<a href="{{art.text}}" style="font-size:24px;color:#030303 font-weight:bold;">·{{ art.Title }}&nbsp</a>
-				<a href="/account/delete/?d_id={{ art.id }}" style="font-size:8px;color:#FF0000 ">X</a></h1>
+				<a href="/account/delete/?d_id={{ art.id }}" style="font-size:8px;color:#FF0000 "onclick="return confirm('确定删除该收藏文件?')">X</a></h1>
             </tr>
 			{% endfor %}
         </table></div>
