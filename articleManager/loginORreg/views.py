@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, render_to_response
-from models import account
+from models import account,Styles
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.template import Context
@@ -52,17 +52,21 @@ def home(request):
     return HttpResponseRedirect("/login/")
 def changePassword(request):
     f = True
-    if request.POST.has_key("tijiao"):
+    print u'进入'
+    if request.POST.has_key('tijiao'):
+        print 'tijiao'
         ps1 = request.POST["pass"]
         ps2 = request.POST["passagain"]
         if len(ps1) != 0 and ps1 != ps2:
             f = False
             return HttpResponse(u"不匹配!")
         elif len(ps1) != 0 and ps1 == ps2:
+            print u'匹配'
             u = User.objects.get(username=request.GET["c_pw"])
-            u.set_password(passeord=request.POST["pass"])
-            u.save()
+            u.set_password(request.POST["pass"])
+            print u.id,u.username
             
+            u.save()
             return HttpResponseRedirect("/login/")
         else:
             return HttpResponse(u"至少有一个密码为空!")
@@ -130,6 +134,10 @@ def regist(request):
             u.save
             a = account(user = u)
             a.save()
+            s = Styles()
+            s.name = u.username
+            s.parent = Styles.objects.get(name = "ROOT")
+            s.save()
             return HttpResponseRedirect("/login/")
     r = Context({"user":user,"password1":password1,"password2":password2,"email":email,"f1":userexist})
     return render_to_response("regist.html",r)      

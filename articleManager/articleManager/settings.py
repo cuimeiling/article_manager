@@ -12,20 +12,21 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import os.path   
+ 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SECRET_KEY = 'x#=f0o4n$)b!zks=39t0y2p!%u1+op3907hmj*+hnj#hu1h+oe'
 
+TEMPLATE_DEBUG = True
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@h3ze5@jj)f2!%$^&rxu=_5g-e^nbam9zz%=2_=ko3q803*_ko'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+DEFAULT_CHARSET='utf-8' 
+
+ALLOWED_HOSTS=[
+        '.sinaapp.com',
+            ]
 
 
 # Application definition
@@ -86,7 +87,7 @@ WSGI_APPLICATION = 'articleManager.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'article',
+        'NAME': 'bookDB',
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': '',
@@ -122,7 +123,9 @@ USE_L10N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(os.path.dirname(__file__),'static')

@@ -17,11 +17,10 @@ from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from loginORreg.views import login, regist, home, forget, changePassword, logout
 from accounts.views import accountHOME, upload_filey, show_all, ADDrergist, upload_files, add, delete,biaoji,\
-                    fy_detail, fs_detail, book, xiugai
+                    fy_detail, fs_detail, book, xiugai, xinjian,uploadImg,docupload,show_root,bianji,site,\
+                    download, xiazai
 
 urlpatterns = patterns('',
-    url(r'^s/(?P<path>.*)$', 'django.views.static.serve',{ 'document_root': \
-                   'loginORreg' }),
     url(r'^$', home),
     url(r'^login/$', login),
     #url(r'^ccc/$',ccc),
@@ -41,5 +40,13 @@ urlpatterns = patterns('',
     url(r'^account/show_all/$', show_all),
     url(r'^account/setting/$', ADDrergist),
     url(r'^account/book/$', book),
+    url(r'^account/xinjian/$', xinjian),
     url(r'^account/xiugai/$', xiugai),
+    url(r'^uploadImg/$',uploadImg),
+    url(r'^account/docupload/$',docupload),
+    url(r'^account/show_root/$',show_root),
+    url(r'^account/bianji/$',bianji),
+    url(r'^account/site/$',site),
+    url(r'^account/download/$',download),
+    url(r'^account/xiazai/$',xiazai),
 )

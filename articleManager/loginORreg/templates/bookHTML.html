@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta name = "viewport" content="width = device-width,initial-scale = 1">
+    <!-- Bootstrap core CSS -->
+
+    <!-- Custom styles for this template -->
+    <!--<link href="/static/css/style.css" rel="stylesheet">-->
+    <title>文章管理器</title>
+	<script type="text/javascript" src="/static/js/shCore.js"></script>
+    <script type="text/javascript" src="/static/js/shBrushJScript.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/css/shCoreDefault.css"/>
+    <script type="text/javascript">SyntaxHighlighter.all();</script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css"/>
+    <script src="/static/js/jquery-1.9.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.nav li').click(function(e) {
+                $('.nav li').removeClass('active');
+                //$(e.target).addClass('active');
+                $(this).addClass('active');
+            });
+        });
+
+    </script>
+    <style type="text/css">
+        body{position: relative;
+        }
+        .bs-docs-sidenav.affix {
+            top: 40px;
+        }
+
+        /*  >表示第一个子元素  */
+        .bs-docs-sidenav > li:first-child > a {
+            -webkit-border-radius: 6px 6px 0 0;
+            -moz-border-radius: 6px 6px 0 0;
+            border-radius: 6px 6px 0 0;
+        }
+        .bs-docs-sidenav > li > a {
+            display: block;
+            width: 190px \9;
+            margin: 0 0 -1px;
+            padding: 8px 14px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .bs-docs-sidenav {
+            width: 130px;
+            margin: 30px 0 0;
+            padding: 0;
+            background-color: #fff;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+            -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+            box-shadow: 0 1px 4px rgba(0,0,0,.065);
+        }
+
+        .bs-docs-sidenav .icon-chevron-right {
+            float: right;
+            margin-top: 2px;
+            margin-right: -6px;
+            opacity: .25;
+        }
+        #content{
+            height:400px;
+            /*此处对容器设置了高度，一般不建议对容器设置高度，一般使用overflow:auto;属性设置容器根据内容自适应高度，如果不指定高度或不设置自适应高度，容器将默认为1个字符高度，容器下方的布局元素（footer）设置margin-top:属性将无效*/
+            margin-top:20px;/*此处讲解margin的用法，设置content与上面header元素之间的距离*/
+
+
+        }
+        .content-left{
+
+            float:left;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
+
+        }
+        .content-main{
+            padding-top: 60px;
+            padding-left:160px;
+            width:1030px;
+			border:1px solid #FFF;
+            float:left;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
+
+        }
+    </style>
+</head><body style="background: white; font-family: Helvetica">
+
+<div>
+<nav class = "navbar navbar-inverse navbar-fixed-top" role = "navigation">
+    <div class = "container">
+        <div class = "navbar-header">
+            <a href = "#" class = "navbar-brand">文章管理器</a>
+        </div>
+        <div id="navbar" class = "collapse navbar-collapse">
+            <ul class = "nav navbar-nav">
+                <li class = "text-right"><a href = "/account/">主页</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        我的书单 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/account/show_all/">显示全部</a></li>
+                        <li><a href="/account/show_root/">按类展示</a></li>
+                    </ul>
+                </li>
+				<li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        我的收藏 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/account/xiazai/">上传文件（可下载）</a></li>
+						<li><a href="/account/site/">收藏的网页</a></li>
+                    </ul>
+                </li>
+                
+                <li class = "text-right"><a href = "/account/setting/">设置</a></li>
+                <li class = "text-right"><a href = "/logout/">注销</a></li>
+            <li  style="padding-top: 8px;">
+                    <form>
+                        <table>
+                            <tr>
+                                
+                                <td><input class="form-control" type="text" name="bookname"></td>
+								<td>
+                                    <select class="form-control" name="classid" id="choose">
+                                        <option value="0">搜索全部</option>
+                                        <option value="1">按类型搜索</option>
+                                        <option value="2">按关键字搜索</option>
+										<option value="3">按题目搜索</option>
+                                        <option value="4">按作者搜索</option>
+										<option value="5">按内容搜索</option>
+                                    </select>
+                                </td>
+                                <td colspan="2">&nbsp&nbsp&nbsp&nbsp&nbsp<button class="btn btn-sm btn-primary" type="submit">搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </li>
+				<li data-toggle="modal"
+                    data-target="#myModal"><a href="#">网页收藏</a></li>
+				</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div id="content">
+    <div class="content-left">
+        <ul data-spy="scroll" data-target=".scrollspy" class="nav nav-list nav bs-docs-sidenav affix-top hidden-xs hidden-sm" style="padding-top: 30px;">
+            <li class="">
+                <a href="/account/add/"><i class="icon-chevron-right"></i>添加本地文章</a>
+            </li>
+            <li class="">
+                <a href="/account/xinjian/"><i class="icon-chevron-right"></i>添加新的文章</a>
+            </li>
+            <li class="">
+                <a href="/account/bianji/?bj={{ a.id }}"><i class="icon-chevron-right"></i>编辑此文章</a>
+            </li>	
+            <li class="">
+                <a href="/account/delete/?d_id={{ a.id }}"><i class="icon-chevron-right"></i>删除此文章</a>
+            </li>
+	   <li class="">
+                <a href="/account/xiugai/?xiugai={{ a.id }}"><i class="icon-chevron-right"></i>修改文章信息</a>
+            </li>
+        </ul>
+    </div>
+    <div class="content-main">
+	
+        <h1 style="text-align: center;color:#8470FF ">{{ a.Title }}</h1>
+		<p style="font-size:12px;color:#B0B0B0;text-align: center;">更改时间：{{ a.update_time }}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp作者：{{ a.author }}</p>
+        <div id="test">
+		
+                {% autoescape off %}
+                    {{ a.text }}
+                {% endautoescape %}
+		</div>
+    </div>
+</div>
+<!-- 模态框（Modal） -->
+                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+                                     aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form class="modal-content" method="post">
+                                            <div class="modal-header">
+                                                <button type="button" class="close"
+                                                        data-dismiss="modal" aria-hidden="true">
+                                                    &times;
+                                                </button>
+                                                <h4 class="modal-title" id="myModalLabel">
+                                                    网页收藏：
+                                                </h4>
+                                            </div>
+
+                                            <div class="modal-body">
+											<table><tr><td>
+											<label>&nbsp&nbsp&nbsp&nbsp&nbsp网址 ：</label></td><td>
+                                                <input type="text" name="site" id="site" class="form-control"
+                                                       value="http://" style="width:400px;"></td></tr>
+											<tr><td>
+											<label>&nbsp&nbsp&nbsp&nbsp&nbsp标题 ：</label></td>
+                                                <td><input type="text" name="title" id="title" class="form-control"
+                                                       value=""></td></tr></table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default"
+                                                        data-dismiss="modal">关闭
+                                                </button>
+                                                <button type="submit" class="btn btn-primary" id="q" name = "q" >确定</button>
+                                            </div></form>
+
+                                        </div>
+                                        <!-- /.modal-content -->
+
+                                    </div>
+                                    <!-- /.modal -->
+    
+
+	<script class="javascript" src="/static/js/shBrushCSharp.js"></script>
+	<script class="javascript" src="/static/js/shBrushPhp.js"></script>
+	<script class="javascript" src="/static/js/shBrushJScript.js"></script>
+	<script class="javascript" src="/static/js/shBrushJava.js"></script>
+	<script class="javascript" src="/static/js/shBrushSql.js"></script>
+	<script class="javascript" src="/static/js/shBrushXml.js"></script>
+	<script class="javascript" src="/static/js/shBrushPython.js"></script>
+	<script class="javascript" src="/static/js/shBrushCss.js"></script>
+	<script class="javascript" src="/static/js/shBrushCpp.js"></script>
+    </body>
+</html>
