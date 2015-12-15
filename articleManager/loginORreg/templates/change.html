@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta name = "viewport" content="width = device-width,initial-scale = 1">
+    <title>Change password</title>
+    <link rel = "stylesheet" href="/s/static/css/bootstrap.min.css">
+    <style>
+        body{
+            padding-top: 100px;
+        }
+        td{padding:10px;border:1px ;}
+        tr{
+            display:block; /*将tr设置为块体元素*/
+            margin:2px;  /*设置tr间距为2px*/}
+
+    </style>
+    <SCRIPT language="JavaScript">
+        <!--
+        function checkreg()
+        {
+            if (document.form1.Pwd.value=="")
+            {
+                alert("请输入密码!");
+                form1.Pwd.focus();
+                return false;
+            }
+            if (document.form1.Pwd.value.length<6 || document.form1.Pwd.value.length>15)
+            {
+                alert("密码长度限制在6-15位!");
+                form1.Pwd.focus();
+                return false;
+            }
+            if(document.form1.Pwd.value!=document.form1.Pwdagain.value)
+            {
+                alert("两次输入的密码不同!")
+                form1.Pwd.focus();
+                return false;
+            }
+
+        function Isval(val,name)
+        {
+            if (val.value!='' && (isNaN(val.value) || val.value==0))
+            {
+                alert(name+"应填数字！");
+                val.value="";
+                val.focus();
+            }
+        }
+        //-->
+    </SCRIPT>
+</head>
+<body>
+<nav class = "navbar navbar-inverse navbar-fixed-top" role = "navigation">
+    <div class = "container">
+        <div class = "navbar-header">
+            <a href = "#" class = "navbar-brand">文章管理器</a>
+        </div>
+        <div id="navbar" class = "collapse navbar-collapse">
+            <ul class = "nav navbar-nav">
+                <li class = "text-right"><a href = "/home/">首页</a></li>
+                <li class = "text-right"><a href = "/regist/">注册</a></li>
+                <li class = "text-right"><a href = "/login/">登录</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container" >
+    <h1 class = "form-signin-heading" style="text-align:center"><strong>修改密码</strong></h1>
+    <form name="form1"  onsubmit="return checkreg()" method="post">
+        <table border="0" cellpadding="0" cellspacing="0" bordercolor="#0000FF" align="center">
+            <tr>
+                <td>密码&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                <td colspan="2"><input type="password" name="pass" id="Pwd" class="form-control" placeholder="Password" required></td>
+            </tr>
+            <tr>
+                <td>确认密码</td>
+                <td colspan="2"><input type="password" name="passagain" id="Pwdagain" class="form-control" placeholder="Confirm Password" required></td>
+            </tr>
+            <tr><td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                <button class="btn btn-sm btn-primary" type="submit" name="Submit" >&nbsp&nbsp&nbsp&nbsp提交&nbsp&nbsp&nbsp&nbsp</button>
+                <!--<input type="submit" name="tijiao" value="提交" ></input>-->
+            </td>
+                <td colspan="2">
+                    <!--<input type="reset" name="Reset" value="重置" /> </td>-->
+                    <button class="btn btn-sm btn-primary btn-danger left" type="reset">&nbsp&nbsp&nbsp&nbsp重置&nbsp&nbsp&nbsp&nbsp</button>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

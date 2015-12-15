@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta name = "viewport" content="width = device-width,initial-scale = 1">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel = "stylesheet" href="/s/static/css/bootstrap.min.css">
+    <script src="/s/static/js/bootstrap.min.js"></script>
+    <title>文章管理器</title>
+    <style>
+        body{
+            padding-top: 100px;
+        }
+        td{padding:10px;border:1px ;}
+        tr{
+            display:block; /*将tr设置为块体元素*/
+            margin:2px;  /*设置tr间距为2px*/}
+    </style>
+</head>
+<body>
+<nav class = "navbar navbar-inverse navbar-fixed-top" role = "navigation">
+    <div class = "container">
+        <div class = "navbar-header">
+            <a href = "#" class = "navbar-brand">文章管理器</a>
+        </div>
+        <div id="navbar" class = "collapse navbar-collapse">
+            <ul class = "nav navbar-nav">
+                <li class = "text-right"><a href = "/account/">主页</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        我的书单 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/account/show_all/">显示全部</a></li>
+                        <li><a href="/account/style/">按类展示</a></li>
+                    </ul>
+                </li>
+                <li class = "text-right"><a href = "#">好友</a></li>
+                <li class = "active text-right"><a href = "/account/setting/">设置</a></li>
+                <li class = "text-right"><a href = "/logout/">注销</a></li>
+            <li  style="padding-top: 8px;">
+                    <form>
+                        <table>
+                            <tr>
+                                <td><input class="form-control" type="text" name="bookname"></td>
+                                <td colspan="2">&nbsp&nbsp&nbsp&nbsp&nbsp<button class="btn btn-sm btn-primary" type="submit">搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class = "container">
+    <h1 class = "form-signin-heading" style="text-align:center"><strong>修改资料</strong></h1>
+    <form name="form1"  onsubmit="return checkreg()" method="post">
+        <table border="0" cellpadding="0" cellspacing="0" bordercolor="#0000FF" align="center">
+
+            <tr>
+                <td>昵称&nbsp&nbsp&nbsp&nbsp</td>
+                <td colspan="2">
+                    <input type="text" name="Nichname" class="form-control" placeholder="Nichname">
+            </tr>
+            <tr>
+                <td>兴趣&nbsp&nbsp&nbsp&nbsp</td>
+                <td colspan="2"><input type="text" name="intersting" class="form-control" placeholder="intersting" ></td>
+            </tr>
+            <tr>
+                <td class="td_bg" width="45%" height="26" align="right">头像</td>
+                <td><input type="file" name = "image"  onchange="handleFiles(this)"></td>
+            </tr>
+                <tr id="fileList" style="width:200px;height:200px;"></tr>
+                <script>
+                    window.URL = window.URL || window.webkitURL;
+                    var fileElem = document.getElementById("fileElem"),
+                            fileList = document.getElementById("fileList");
+                    function handleFiles(obj) {
+                        var files = obj.files,
+                                img = new Image();
+                        if(window.URL){
+                            //File API
+//                            alert(files[0].name + "," + files[0].size + " bytes");
+                            img.src = window.URL.createObjectURL(files[0]); //创建一个object URL，并不是你的本地路径
+                            img.width = 200;
+                            img.onload = function(e) {
+                                window.URL.revokeObjectURL(this.src); //图片加载后，释放object URL
+                            }
+                            fileList.appendChild(img);
+                        }else if(window.FileReader){
+                            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+                            var reader = new FileReader();
+                            reader.readAsDataURL(files[0]);
+                            reader.onload = function(e){
+                                alert(files[0].name + "," +e.total + " bytes");
+                                img.src = this.result;
+                                img.width = 200;
+                                fileList.appendChild(img);
+                            }
+                        }else{
+                            //ie
+                            obj.select();
+                            obj.blur();
+                            var nfile = document.selection.createRange().text;
+                            document.selection.empty();
+                            img.src = nfile;
+                            img.width = 200;
+//                            img.onload=function(){
+//                                alert(nfile+","+img.fileSize + " bytes");
+//                            }
+//                            fileList.appendChild(img);
+                            //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+                        }
+                    }
+                </script>
+
+            <tr><td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                <button class="btn btn-sm btn-primary left" type="submit" name="Submit"><strong>&nbsp&nbsp&nbsp&nbsp提交&nbsp&nbsp&nbsp&nbsp</strong></button>
+                <!--<input type="submit" name="Submit" value="提交" ></input>-->
+            </td>
+                <td colspan="2">
+                    <!--<input type="reset" name="Reset" value="重置" /> </td>-->
+                    <button class="btn btn-sm btn-primary btn-danger right" type="reset"><strong>&nbsp&nbsp&nbsp&nbsp重置&nbsp&nbsp&nbsp&nbsp</strong></button>
+            </tr> </table>
+    </form>
+</div>
+</body>
+</html>
