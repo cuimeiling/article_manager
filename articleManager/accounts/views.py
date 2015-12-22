@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect
 import os, time, random
+#from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 from django import forms
 # Create your views here.
@@ -422,24 +423,35 @@ def book(request):
             return render_to_response('book.html',{'a':a,"name":name,'comments':com})
         if a.atctype == "html":
             return render_to_response('bookHTML.html',{'a':a,'title':a.Title,'comments':com})
-def show_all(req):
-    if "bookname" in req.GET:
-        u = User.objects.get(id=req.user.id).account
-        a = u.articles.all().filter(Title__icontains=req.GET["bookname"]).exclude(atctype = "other")
+def show_all(request):
+    if "bookname" in request.GET:
+        u = User.objects.get(id=request.user.id).account
+        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
         return render_to_response('show.html',{"articles":a})
-    if not req.user.is_authenticated():
+    if not request.user.is_authenticated():
         return HttpResponseRedirect("/login/")
     else:
-        u = User.objects.get(id=req.user.id).account
+        u = User.objects.get(id=request.user.id).account
         a = u.articles.all().exclude(atctype = "other")
         b = Article.objects.filter(power = "20").exclude(atctype = "other")
         a = b|a
         a = a.distinct()
+        if "y" in request.GET:
+            if request.GET["y"]=='1':
+                a = a.order_by('-update_time')
+            if request.GET["y"]=='0':
+                a = a.order_by('Title')
+        return render_to_response('show.html',{"articles":a})
+        '''paginator = Paginator(a, 20)
+        page = request.GET.get('page')
         try:
-            print a.order_by('-update_time')[0].Title
-            return render_to_response('show.html',{"articles":a})
-        except:
-            return render_to_response('error.html',{"error":u"您还没有添加文章，请添加以后查询！"})
+            b = paginator.page(page)
+        except PageNotAnInteger:
+            b = paginator.page(1)
+        except EmptyPage:
+            b = paginator.page(paginator.num_pages)'''
+        
+        
 def xiazai(req):
     if "bookname" in req.GET:
         u = User.objects.get(id=req.user.id).account

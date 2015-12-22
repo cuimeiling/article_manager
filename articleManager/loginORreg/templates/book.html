@@ -119,9 +119,7 @@
 <div>
 <nav class = "navbar navbar-inverse navbar-fixed-top" role = "navigation">
     <div class = "container">
-        <div class = "navbar-header">
-            <a href = "#" class = "navbar-brand">文章管理器</a>
-        </div>
+
         <div id="navbar" class = "collapse navbar-collapse">
             <ul class = "nav navbar-nav">
                 <li class = "text-right"><a href = "/account/">主页</a></li>
@@ -161,7 +159,7 @@
                 <a href="/account/xinjian/"><i class="icon-chevron-right"></i>添加新的文章</a>
             </li>
             <li class="">
-                <a href="/account/delete/?d_id={{ a.id }}"><i class="icon-chevron-right"></i>删除此文章</a>
+                <a href="/account/delete/?d_id={{ a.id }}" onclick="return confirm('确定删除该文章?')"><i class="icon-chevron-right"></i>删除此文章</a>
             </li>
 	   <li class="">
                 <a href="/account/xiugai/?xiugai={{ a.id }}"><i class="icon-chevron-right"></i>修改文章信息</a>

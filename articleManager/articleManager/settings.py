@@ -13,10 +13,17 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import os.path   
- 
+import sae.const 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'x#=f0o4n$)b!zks=39t0y2p!%u1+op3907hmj*+hnj#hu1h+oe'
+
+MYSQL_DB = sae.const.MYSQL_DB   
+MYSQL_USER = sae.const.MYSQL_USER   
+MYSQL_PASS = sae.const.MYSQL_PASS   
+MYSQL_HOST_M = sae.const.MYSQL_HOST   
+MYSQL_HOST_S = sae.const.MYSQL_HOST_S   
+MYSQL_PORT = sae.const.MYSQL_PORT  
 
 TEMPLATE_DEBUG = True
 
@@ -39,7 +46,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'loginORreg',
-    
     'accounts',
     'accounts.models',
 )
@@ -72,28 +78,23 @@ TEMPLATES = [
         },
     },
 ]
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+
 WSGI_APPLICATION = 'articleManager.wsgi.application'
 
 # -*- coding: utf-8 -*-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bookDB',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '',
-        'PORT': '',
-    }
-}
+DATABASES = {  
+    'default': {  
+        'ENGINE': 'django.db.backends.mysql',   
+        'NAME': 'app_articlemanager',   
+        'USER': MYSQL_USER,   
+        'PASSWORD': MYSQL_PASS,   
+        'HOST': MYSQL_HOST_M,   
+        'PORT': MYSQL_PORT,   
+    }  
+}  
 '''
 DATABASES = {
     'default': {
