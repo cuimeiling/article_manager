@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html">
     <meta name = "viewport" content="width = device-width,initial-scale = 1">
     <title>文章管理器</title>
+    <link rel="shortcut icon" href="/static/image/article.ico" />
     <link rel = "stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
     <script src="/static/js/jquery-1.9.1.min.js"></script>
@@ -68,8 +69,24 @@
 <div class="upload" style="padding-left:200px;">
     <h1 >上传私有文档</h1>
     <form method="post" enctype="multipart/form-data" >
-	{{uf.as_p}}
-	<input type="submit" style="margin:10px 10px 10px 80px;" value="ok"/>
+	 <table border="0" cellpadding="0" cellspacing="0" bordercolor="#0000FF" align="center">
+
+            <tr>
+                <td>标题&nbsp&nbsp&nbsp&nbsp</td>
+                <td colspan="2">
+                     <input type='text' name='textfield' id='textfield' class='txt' /> 
+            </tr><tr><td>&nbsp&nbsp&nbsp</td></tr><tr>&nbsp&nbsp&nbsp</tr>
+            <tr>
+                <td>文件&nbsp&nbsp&nbsp&nbsp</td>
+                <td colspan="2">
+                   
+				<input type="file" name="file" class="file" id="file" size="28" onchange="document.getElementById('textfield').value=this.value" />
+            </tr><tr><td>&nbsp&nbsp&nbsp</td></tr><tr>&nbsp&nbsp&nbsp</tr>
+            <tr><td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                <button class="btn btn-sm btn-primary right" type="submit" name = "tijiao"><strong>&nbsp&nbsp&nbsp&nbsp提交&nbsp&nbsp&nbsp&nbsp</strong></button>
+            </td>
+                
+            </tr> </table>
 	</form>
 </div>
 <div class="int" style="padding-top: 10px;">

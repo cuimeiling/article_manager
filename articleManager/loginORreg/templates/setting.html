@@ -9,6 +9,7 @@
     <script charset="utf-8" src="/static/kindeditor-4.1.10//lang/zh_CN.js"></script>
 	<script type="text/javascript" src="/static/js/shCore.js"></script>
 	<link rel = "stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="/static/image/article.ico" />
     <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
     <script src="/static/js/jquery-1.9.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -22,7 +23,7 @@
                 cssPath: '/static/kindeditor-4.1.10/plugins/code/prettify.css',
                 resizeType: 1,
 				pasteType : 1,
-                uploadJson: 'http://127.0.0.1:8000/uploadImg/',
+                uploadJson: '/uploadImg/',
 				afterBlur:function(){this.sync();}, 
 				items:["image",]
             });
@@ -63,7 +64,7 @@
                     </ul>
                 </li>
                 
-                <li class = "text-right"><a href = "/account/setting/">设置</a></li>
+                <li class = "active text-right"><a href = "/account/setting/">设置</a></li>
                 <li class = "text-right"><a href = "/logout/">注销</a></li>
             <li  style="padding-top: 8px;">
                     <form>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
     <!-- Custom styles for this template -->
     <!--<link href="/static/css/style.css" rel="stylesheet">-->
     <title>文章管理器</title>
+    <link rel="shortcut icon" href="/static/image/article.ico" />
     <link rel = "stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
     <script src="/static/js/jquery-1.9.1.min.js"></script>
@@ -151,6 +152,20 @@
             </tr>
         {% endfor %}
         </table>
+		<div class="pagination">
+    <span class="step-links" style="padding-top: 60px;padding-left: 300px;padding-rig:ht 300px;">
+        {% if articles.has_previous %}
+            <a href="?page={{ articles.previous_page_number }}">《前一页</a>
+        {% endif %}
+        <span class="current">
+            &nbsp&nbsp&nbsp&nbsp&nbsp第 {{ articles.number }} 页，共 {{ articles.paginator.num_pages }}页&nbsp&nbsp&nbsp&nbsp&nbsp
+        </span>
+
+        {% if articles.has_next %}
+            <a href="?page={{ articles.next_page_number }}">后一页》</a>
+        {% endif %}
+    </span>
+</div>
 </div>
 		
 

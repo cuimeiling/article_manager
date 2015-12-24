@@ -6,55 +6,72 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect
 import os, time, random
-#from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 from django import forms
-# Create your views here.
-def display(Styles):     
-    display_list = []       
-    for style in Styles:         
-        display_list.append(style.name)           
-        children = style.children.all()         
-        if len(children) > 0:             
-            display_list.append(display(style.children.all()))               
-    return display_list
+import sae.const
+import sae.storage
+access_key = sae.const.ACCESS_KEY
+secret_key = sae.const.SECRET_KEY
+appname = sae.const.APP_NAME
+FILESAVE_DOMAIN_NAME = "madia"
+def save(request_file,file_path_name):
+    s = sae.storage.Client()
+    ob = sae.storage.Object(request_file.read())
+    url = s.put(FILESAVE_DOMAIN_NAME, file_path_name, ob)
+    return url
+def search(name,classes,u):
+    a = Article.objects.filter(Title__icontains=name)
+    h = Article.objects.filter(power = "20").exclude(atctype = "other")
+    i = u.articles.all().exclude(atctype = "other")
+    a = a&(h|i)
+    if classes == '0':
+        a = Article.objects.filter(Title__icontains=name)
+        b = Article.objects.filter(keywords1__icontains=name)
+        c = Article.objects.filter(keywords2__icontains=name)
+        d = Article.objects.filter(keywords3__icontains=name)
+        e = Article.objects.filter(text__icontains=name)
+        f = Article.objects.filter(author__icontains=name)
+        s = Styles.objects.filter(name__icontains=name)
+        g = Article.objects.filter(style = s)
+        a = a|b|c|d|e|f|g
+        a = a&(h|i)
+        a = a.distinct()
+    elif classes == '1':
+        s = Styles.objects.filter(name__icontains=name)
+        a = Article.objects.filter(style = s)
+        a = a&(h|i)
+    elif classes == '2':
+        b = Article.objects.filter(keywords1__icontains=name)
+        c = Article.objects.filter(keywords2__icontains=name)
+        d = Article.objects.filter(keywords3__icontains=name)
+        a = b|c|d
+        a = a&(h|i)
+        a = a.distinct()
+    elif classes == '3':
+        a = Article.objects.filter(Title__icontains=name)
+        a = a&(h|i)
+    elif classes == '4':
+        a = Article.objects.filter(author__icontains=name)
+        a = a&(h|i)
+    elif classes == '5':
+        a = Article.objects.filter(text__icontains=name)
+        a = a&(h|i)
+    paginator = Paginator(a, 20)
+    page = '1'
+    try:
+        b = paginator.page(page)
+    except PageNotAnInteger:
+        b = paginator.page(1)
+    except EmptyPage:
+        b = paginator.page(paginator.num_pages)
+    return b
 def accountHOME(request):
     u = User.objects.get(id=request.user.id).account
     if "bookname" in request.GET:
-        h = Article.objects.filter(power = "20").exclude(atctype = "other")
-        i = u.articles.all().exclude(atctype = "other")
-        if request.GET["classid"] == '0':
-            a = Article.objects.filter(Title__icontains=request.GET["bookname"])
-            b = Article.objects.filter(keywords1__icontains=request.GET["bookname"])
-            c = Article.objects.filter(keywords2__icontains=request.GET["bookname"])
-            d = Article.objects.filter(keywords3__icontains=request.GET["bookname"])
-            e = Article.objects.filter(text__icontains=request.GET["bookname"])
-            f = Article.objects.filter(author__icontains=request.GET["bookname"])
-            s = Styles.objects.filter(name__icontains=request.GET["bookname"])
-            g = Article.objects.filter(style = s)
-            a = a|b|c|d|e|f|g
-            a = a&(h|i)
-            a = a.distinct()
-        elif request.GET["classid"] == '1':
-            s = Styles.objects.filter(name__icontains=request.GET["bookname"])
-            a = Article.objects.filter(style = s)
-            a = a&(h|i)
-        elif request.GET["classid"] == '2':
-            b = Article.objects.filter(keywords1__icontains=request.GET["bookname"])
-            c = Article.objects.filter(keywords2__icontains=request.GET["bookname"])
-            d = Article.objects.filter(keywords3__icontains=request.GET["bookname"])
-            a = b|c|d
-            a = a&(h|i)
-            a = a.distinct()
-        elif request.GET["classid"] == '3':
-            a = Article.objects.filter(Title__icontains=request.GET["bookname"])
-            a = a&(h|i)
-        elif request.GET["classid"] == '4':
-            a = Article.objects.filter(author__icontains=request.GET["bookname"])
-            a = a&(h|i)
-        elif request.GET["classid"] == '5':
-            a = Article.objects.filter(text__icontains=request.GET["bookname"])
-            a = a&(h|i)
+        p = request.GET["bookname"]
+        q = request.GET["classid"]
+        a = search(p,q,u)
         return render_to_response('show.html',{"articles":a})
     if request.POST.has_key("q"):
         print '!!!!!!!!'
@@ -84,13 +101,11 @@ def accountHOME(request):
                 com = comment.objects.filter(article_id = str(a[0].id))
                 return render_to_response('bookHTML.html',{'a':a[0],'title':a[0].Title,'comments':com})
             if a[0].atctype == "pdf" or "other":
-                name  = a.order_by('-update_time')[0].filey
-                name = str(name)[10:]
+                name  = a.order_by('-update_time')[0].text
                 print name
                 i=1
                 while '.pdf' not in name:
-                    name  = a.order_by('-update_time')[i].filey
-                    name = str(name)[10:]
+                    name  = a.order_by('-update_time')[i].text
                     i+=1
                 b = a.order_by('-update_time')[i-1]
                 com = comment.objects.filter(article_id = str(b.id))
@@ -103,12 +118,15 @@ def accountHOME(request):
 def bianji(request):
     u = User.objects.get(id=request.user.id)
     if "bookname" in request.GET:
-        u = u.account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if "bj" in request.GET:
+        v = u.account
+        p =v.articles.all()
         atc = Article.objects.get(id = request.GET["bj"])
         b = Article.objects.filter(id = request.GET["bj"])
+        if atc not in p:
+            return render_to_response('error.html',{"error":u"您没有权限编辑此文章！"})
         if request.POST.has_key("tijiao"):
             try:
                 post = request.POST
@@ -140,8 +158,7 @@ def xinjian(request):
     u = User.objects.get(id=request.user.id)
     atc.author = u.account.nichname
     if "bookname" in request.GET:
-        u = u.account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if request.POST.has_key("tijiao"):
         post = request.POST
@@ -181,8 +198,7 @@ def xinjian(request):
 def show_root(req):
     u = User.objects.get(id=req.user.id)
     if "bookname" in req.GET:
-        u = u.account
-        a = u.articles.all().filter(Title__icontains=req.GET["bookname"]).exclude(atctype = "other")
+        a = search(req.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if not req.user.is_authenticated():
         return HttpResponseRedirect("/login/")
@@ -208,52 +224,88 @@ class UserForm(forms.Form):
     Title = forms.CharField()
     filey = forms.FileField()
 
+def xiugai(req):
+    u = User.objects.get(id=req.user.id)
+    if "bookname" in req.GET:
+        u = u.account
+        a = search(request.GET["bookname"],'3',u)
+        return render_to_response('show.html',{"articles":a})
+    if "xiugai" in req.GET:
+        a = Article.objects.get(id = req.GET["xiugai"])
+        b = Article.objects.filter(id = req.GET["xiugai"])
+        root = Styles.objects.get(name = "ROOT")
+        v = User.objects.get(id=req.user.id).account
+    	p =v.articles.all()
+        if a not in p:
+            return render_to_response('error.html',{"error":u"您没有权限修改此文章信息！"})
+        print a.Title
+        if req.POST.has_key("tijiao"):
+            try:
+                b.update(Title = req.POST["title"])
+                b.update(keywords1 = req.POST["kw1"])
+                b.update(keywords2 = req.POST["kw2"])
+                b.update(keywords3 = req.POST["kw3"])
+                b.update(author = req.POST["author"])
+                try:
+                    s = Styles.objects.get(name = req.POST["type"])
+                    b.update(style = s)
+                except:
+                    s = Styles()
+                    s.parent = Styles.objects.get(name = u.username)
+                    s.name = req.POST["type"]
+                    s.save()
+                    b.update(style = s)
+                return HttpResponseRedirect("/account/")
+            except:
+                return HttpResponseRedirect("/account/") 
+        root = Styles.objects.get(name = u.username)
+        c = root.children.all()
+        return render_to_response('xiugai.html',{"a":a,"root":c})
 def ADDrergist(request):
     u = User.objects.get(id=request.user.id).account
+    v = account.objects.filter(id = u.id)
     if "bookname" in request.GET:
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if request.POST.has_key("tijiao"):
-        u.update(nichname = request.POST["Nichname"])
-        x = request.POST["content"][10:-10]
-        u.update(Favicon = x)
-        u.update(intristing = request.POST["intersting"])
+        v.update(nichname = request.POST["Nichname"])
+        x = request.POST["content"][10:-11]
+        v.update(Favicon = x)
+        v.update(intristing = request.POST["intersting"])
         return HttpResponseRedirect("/account/")
     return render_to_response('setting.html')
 def upload_filey(request):
+    u = User.objects.get(id=request.user.id).account
     if "bookname" in request.GET:
-        u = User.objects.get(id=request.user.id).account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
-    if request.method == "POST":
-        uf = UserForm(request.POST,request.FILES)
-        if uf.is_valid():
-            Title = uf.cleaned_data['Title']
-            filey = uf.cleaned_data['filey']
-            atc = Article()
-            atc.Title = Title
-            atc.filey = filey
-            atc.style = Styles.objects.get(id = 1)
-            if 'pdf' in str(filey):
-                atc.atctype = "pdf"
-            else:
-                atc.atctype = "other"
-            atc.save()
-            atc.text = str(atc.filey)[10:]
-            atc.save()
-            u = User.objects.get(id=request.user.id).account
-            u.articles.add(atc)
-            u.save()
+    if request.POST.has_key("tijiao"):
+        atc = Article()
+        fil = request.FILES["file"]
+        atc.Title = request.POST["textfield"]
+        atc.style = Styles.objects.get(id = 1)
+        if '.pdf' in str(fil):
+            atc.atctype = "pdf"
+        else:
+            atc.atctype = "other"
+        ext = str(fil)[str(fil).index('.'):]
+        fn = time.strftime('%Y%m%d%H%M%S')
+        fn = fn + '_%d' % random.randint(0,100) + ext
+        save(fil,fn)
+        atc.filey = 'http://articlemanager-madia.stor.sinaapp.com/' + fn
+        atc.text = atc.filey
+        atc.save()
+        u = User.objects.get(id=request.user.id).account
+        u.articles.add(atc)
+        u.save()
+        return HttpResponseRedirect("details/?atc=%s"% atc.id)
 
-            return HttpResponseRedirect("details/?atc=%s"% atc.id)
-    else:
-        uf = UserForm()
-    return render_to_response('addy.html',{'uf':uf})
+    return render_to_response('addy.html')
 def fy_detail(request):
     u = User.objects.get(id=request.user.id)
     if "bookname" in request.GET:
         u = u.account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if "atc" in request.GET:
         art = Article.objects.get(id = request.GET["atc"])
@@ -276,40 +328,39 @@ def fy_detail(request):
             return HttpResponseRedirect("/account/")
         root = Styles.objects.get(name = u.username)
         a = root.children.all()
-        return render_to_response('addy_detail.html',{"root":a})
+        return render_to_response('adds_detail.html',{"root":a})
 def upload_files(request):
     if "bookname" in request.GET:
         u = User.objects.get(id=request.user.id).account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
-    if request.method == "POST":
-        uf = UserForm(request.POST,request.FILES)
-        if uf.is_valid():
-            Title = uf.cleaned_data['Title']
-            filey = uf.cleaned_data['filey']
-            atc = Article()
-            atc.Title = Title
-            atc.filey = filey
-            atc.style = Styles.objects.get(id = 1)
-            if 'pdf' in str(filey):
-                atc.atctype = "pdf"
-            else:
-                atc.atctype = "other"
-            atc.save()
-            atc.text = str(atc.filey)[10:]
-            atc.save()
-            u = User.objects.get(id=request.user.id).account
-            u.articles.add(atc)
-            u.save()
-            return HttpResponseRedirect("details/?atc=%s"% atc.id)
-    else:
-        uf = UserForm()
-    return render_to_response('adds.html',{'uf':uf})
+    if request.POST.has_key("tijiao"):
+        atc = Article()
+        fil = request.FILES["file"]
+        atc.Title = request.POST["textfield"]
+        atc.style = Styles.objects.get(id = 1)
+        if '.pdf' in str(fil):
+            atc.atctype = "pdf"
+        else:
+            atc.atctype = "other"
+        ext = str(fil)[str(fil).index('.'):]
+        fn = time.strftime('%Y%m%d%H%M%S')
+        fn = fn + '_%d' % random.randint(0,100) + ext
+        save(fil,fn)
+        atc.filey = 'http://articlemanager-madia.stor.sinaapp.com/static/' + fn
+        atc.text = atc.filey
+        atc.save()
+        u = User.objects.get(id=request.user.id).account
+        u.articles.add(atc)
+        u.save()
+        return HttpResponseRedirect("details/?atc=%s"% atc.id)
+
+    return render_to_response('adds.html')
 def fs_detail(request):
     u = User.objects.get(id=request.user.id)
     if "bookname" in request.GET:
         u = u.account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if "atc" in request.GET:
         art = Article.objects.get(id = request.GET["atc"])
@@ -345,44 +396,16 @@ def biaoji(req):
             return HttpResponseRedirect("/account/")
         except:
             return HttpResponseRedirect("/account/")
-def xiugai(req):
-    u = User.objects.get(id=req.user.id)
-    if "bookname" in req.GET:
-        u = u.account
-        a = u.articles.all().filter(Title__icontains=req.GET["bookname"]).exclude(atctype = "other")
-        return render_to_response('show.html',{"articles":a})
-    if "xiugai" in req.GET:
 
-        a = Article.objects.get(id = req.GET["xiugai"])
-        b = Article.objects.filter(id = req.GET["xiugai"])
-        root = Styles.objects.get(name = "ROOT")
-        c = root.children.all()
-        
-        print a.Title
-        if req.POST.has_key("tijiao"):
-            try:
-                b.update(Title = req.POST["title"])
-                b.update(keywords1 = req.POST["kw1"])
-                b.update(keywords2 = req.POST["kw2"])
-                b.update(keywords3 = req.POST["kw3"])
-                b.update(author = req.POST["author"])
-                try:
-                    s = Styles.objects.get(name = req.POST["type"])
-                    b.update(style = s)
-                except:
-                    s = Styles()
-                    s.parent = Styles.objects.get(name = u.username)
-                    s.name = req.POST["type"]
-                    s.save()
-                    b.update(style = s)
-                return HttpResponseRedirect("/account/")
-            except:
-                return HttpResponseRedirect("/account/") 
-        return render_to_response('xiugai.html',{"a":a,"root":c})
     
     
 def delete(req):
+    u = User.objects.get(id=req.user.id).account
+    p =u.articles.all()
     if "d_id" in req.GET:
+        r = Article.objects.get(id = req.GET["d_id"])
+        if r not in p:
+            return render_to_response('error.html',{"error":u"您没有权限删除此文章！"})
         try:
             a = Article.objects.get(id = req.GET["d_id"])
             u = User.objects.get(id=req.user.id).account
@@ -392,7 +415,6 @@ def delete(req):
         except:
             return HttpResponseRedirect("/account/")
     if "l_id" in req.GET:
-        print "!!"
         try:
             a = link.objects.get(id = req.GET["l_id"])
             print "!"
@@ -404,7 +426,7 @@ def delete(req):
 def book(request):
     u = User.objects.get(id=request.user.id).account
     if "bookname" in request.GET:
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if "book" in request.GET:
         if request.POST.has_key("tijiao"):
@@ -418,15 +440,14 @@ def book(request):
         a = Article.objects.get(id = request.GET["book"])
         com = comment.objects.filter(article_id = str(a.id))
         if a.atctype == "pdf":
-            name  = a.filey
-            name = str(name)[10:]
+            name  = a.text
             return render_to_response('book.html',{'a':a,"name":name,'comments':com})
         if a.atctype == "html":
             return render_to_response('bookHTML.html',{'a':a,'title':a.Title,'comments':com})
 def show_all(request):
     if "bookname" in request.GET:
         u = User.objects.get(id=request.user.id).account
-        a = u.articles.all().filter(Title__icontains=request.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if not request.user.is_authenticated():
         return HttpResponseRedirect("/login/")
@@ -441,21 +462,21 @@ def show_all(request):
                 a = a.order_by('-update_time')
             if request.GET["y"]=='0':
                 a = a.order_by('Title')
-        return render_to_response('show.html',{"articles":a})
-        '''paginator = Paginator(a, 20)
+        
+        paginator = Paginator(a, 20)
         page = request.GET.get('page')
         try:
             b = paginator.page(page)
         except PageNotAnInteger:
             b = paginator.page(1)
         except EmptyPage:
-            b = paginator.page(paginator.num_pages)'''
-        
+            b = paginator.page(paginator.num_pages)
+        return render_to_response('show.html',{"articles":b})
         
 def xiazai(req):
     if "bookname" in req.GET:
         u = User.objects.get(id=req.user.id).account
-        a = u.articles.all().filter(Title__icontains=req.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if not req.user.is_authenticated():
         return HttpResponseRedirect("/login/")
@@ -473,7 +494,7 @@ def xiazai(req):
 def site(req):
     if "bookname" in req.GET:
         u = User.objects.get(id=req.user.id).account
-        a = u.articles.all().filter(Title__icontains=req.GET["bookname"]).exclude(atctype = "other")
+        a = search(request.GET["bookname"],'3',u)
         return render_to_response('show.html',{"articles":a})
     if not req.user.is_authenticated():
         return HttpResponseRedirect("/login/")
@@ -496,7 +517,7 @@ def docupload(request):
                 try:
                     file_name = time.strftime('%Y%m%d%H%M%S')
                     file_name = file_name + '_%d' % random.randint(0,100)+s[i].split('.')[-1]
-                    save_img("loginORreg/static/image/upload/",file_name,s[i])
+                    save_img("static/image/upload/",file_name,s[i])
                     if (i == len(s) - 1):
                         sr += file_name
                     else:
@@ -513,22 +534,19 @@ def docupload(request):
         
 def uploadImg(request):
     if request.method == 'POST':
-        file_obj = open("log.txt","w+")
         buf = request.FILES.get('imgFile', None)
-        print >> file_obj,str(buf)
-        file_buff = buf.read()
         try:
-            file_name = time.strftime('%Y%m%d%H%M%S')
-            file_name = file_name + '_%d' % random.randint(0,100)+".jpg"
-            save_file("loginORreg/static/image/upload/", file_name, file_buff)
+            ext = str(buf)[str(buf).index('.'):]
+            fn = time.strftime('%Y%m%d%H%M%S')
+            fn = fn + '_%d' % random.randint(0,100) + ext
+            save(buf,fn)
             dict_tmp = {}
             dict_tmp["error"] = 0
-            dict_tmp["url"] = "/static/image/upload/"+file_name
+            dict_tmp["url"] = 'http://articlemanager-madia.stor.sinaapp.com/' + fn
             return HttpResponse(json.dumps(dict_tmp))
-        except Exception,e:
+        except Exception:
             dict_tmp = {}
             dict_tmp["error"] = 1
-            print >> file_obj,e
             return HttpResponse(json.dumps(dict_tmp))
 #对path进行处理
 def mkdir(path):

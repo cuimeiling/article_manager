@@ -33,7 +33,6 @@ def forget(request):
                 count += 1
             
             validateNum=''.join(R)
-            validateNum="aaa"
             send_mail('code back',validateNum, 'article_manager@yean.com',[email], fail_silently=True)
             mail_admins(u'用户注册反馈', u'当前XX用户注册了该网站', fail_silently=True)
         if request.POST.has_key("queding") and request.POST["code"]=="aaa":

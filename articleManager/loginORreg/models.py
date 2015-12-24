@@ -5,6 +5,9 @@ from storage import ImageStorage
 from django.utils import timezone
 #from django.contrib.auth.admin import UserAdmin
 #import datetime
+
+
+
 class comment(models.Model):
     article_id = models.CharField(max_length=42)
     owner = models.CharField(max_length=256)
@@ -22,7 +25,7 @@ class Article(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     atctype = models.CharField(max_length=30)
-    filey = models.FileField(upload_to = './loginORreg/static/file/', storage=ImageStorage(), blank = True)
+    filey = models.CharField(max_length=100,blank = True)
     text = models.TextField(null=True, default='', blank = True)
     keywords1 = models.CharField(max_length=20, null=True, default='', blank = True)
     keywords2 = models.CharField(max_length=20, null=True, default='', blank = True)

@@ -17,7 +17,13 @@ import sae.const
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'x#=f0o4n$)b!zks=39t0y2p!%u1+op3907hmj*+hnj#hu1h+oe'
+'''
+MEDIA_URL = '/madia/'
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760
+DEFAULT_FILE_STORAGE = 'sae.ext.django.storage.backend.Storage'
+STORAGE_BUCKET_NAME = 'madia'
 
+'''
 MYSQL_DB = sae.const.MYSQL_DB   
 MYSQL_USER = sae.const.MYSQL_USER   
 MYSQL_PASS = sae.const.MYSQL_PASS   
@@ -25,7 +31,7 @@ MYSQL_HOST_M = sae.const.MYSQL_HOST
 MYSQL_HOST_S = sae.const.MYSQL_HOST_S   
 MYSQL_PORT = sae.const.MYSQL_PORT  
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 DEBUG = True
 
@@ -48,18 +54,27 @@ INSTALLED_APPS = (
     'loginORreg',
     'accounts',
     'accounts.models',
+    'pagination',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+    
 )
+
+
+SAE_DEFAULT_STORAGE_DOMAIN_NAME = 'madia'
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520 
+FILE_UPLOAD_TEMP_DIR = '/s/madia/tmp/' 
+
 
 ROOT_URLCONF = 'articleManager.urls'
 AUTH_PROFILE_MODULE = 'account.account'

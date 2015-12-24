@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html">
     <meta name="viewport" content="width = device-width,initial-scale = 1">
     <title>文章管理器</title>
+    <link rel="shortcut icon" href="/static/image/article.ico" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css"/>
     <link rel="stylesheet" href="/static/kindeditor-4.1.10/plugins/code/prettify.css" media="screen" type="text/css"/>
@@ -23,7 +24,7 @@
                 cssPath: '/static/kindeditor-4.1.10/plugins/code/prettify.css',
                 resizeType: 1,
 				pasteType : 1,
-                uploadJson: 'http://127.0.0.1:8000/uploadImg/',
+                uploadJson: '/uploadImg/',
 				afterBlur:function(){this.sync();}, 
 				items:["formatblock", "fontname", "fontsize"," " ,"|"," ",
 				"bold", "italic", "underline"," " ,"|"," ","forecolor"," " ,"hilitecolor"," " ,"|","|"," ","justifyleft", "justifycenter", "justifyright",
